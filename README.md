@@ -1,196 +1,51 @@
-# 🍱 Food Connect – Save Food, Share Food
+# Food Connect v26
 
-**Food Connect** is a location-based food redistribution platform that connects people and organizations with surplus food to nearby seekers who need it.
+This is the cleaned, single-file v26 build based on the deployed v24 HTML supplied by the project owner.
 
-The platform aims to reduce food wastage by making it easier to **share surplus food, discover available food, find nearby seekers, and coordinate food collection**.
+## What v26 fixes
 
-## 🌱 Problem
+- Correct Supabase project URL and publishable key.
+- One clean authentication implementation: create account, email confirmation, sign in, resend confirmation, forgot password, password recovery and show/hide password.
+- No verification requirement in the user flow or matching logic.
+- Donor flow: donor details → food details → photos/safety → exact pickup location.
+- Seeker flow: organization details → food need/location → WhatsApp consent/authorization.
+- Browser GPS + Leaflet map pin + area/locality, district and city fill.
+- Nearby matching through the `get_nearby_network` RPC within 20 km.
+- Nearby match creation after a donor submits through `create_nearby_matches`.
+- Nearby preview shows up to five fallback results when nothing is inside 20 km.
+- WhatsApp buttons prepare a message and open `wa.me`; WhatsApp is never sent automatically.
+- Food photos upload to the `food-photos` Supabase Storage bucket.
+- Live database stats and live pending donation listings; no hard-coded demo counts/listings.
+- Mobile-responsive landing page, navigation drawer and food-themed Share/Request cards.
 
-Large amounts of usable food can be wasted from restaurants, hotels, colleges, homes, weddings, functions, caterers and other events, while people and organizations may need food.
+## Supabase setup
 
-Food Connect provides a simple digital platform to help connect these two sides.
+The browser uses the Supabase **publishable** key only. Do not put a service-role/secret key in this file.
 
-## 💡 Solution
+After the main Food Connect database setup is already complete, run `supabase_v26_matching_patch.sql` in the Supabase SQL Editor. This updates the two matching functions used by v26 so they do not require organization verification.
 
-### Donor
+## Authentication redirect URL
 
-```text
-Register / Login
-      ↓
-Share Surplus Food
-      ↓
-Add Food + Quantity + Location
-      ↓
-Set Available Until Time
-      ↓
-Find Nearby Seekers
-      ↓
-Contact Through WhatsApp
-      ↓
-Food Collection
+In Supabase Dashboard → Authentication → URL Configuration, add the exact Netlify site URL, for example:
+
+`https://YOUR-SITE.netlify.app/`
+
+The same site URL is used by confirmation and password-reset links.
+
+## Gmail SMTP
+
+Keep the working SMTP settings already configured in Supabase. The website itself does not contain the Gmail password or App Password.
+
+## Local testing
+
+Do not open `index.html` directly with `file://` when testing authentication.
+
+From this folder run:
+
+```bash
+python -m http.server 5500
 ```
 
-### Seeker
+Then open `http://localhost:5500/`.
 
-```text
-Register / Login
-      ↓
-Add Location
-      ↓
-Find Available Food
-      ↓
-Select Food
-      ↓
-Contact Donor Through WhatsApp
-      ↓
-Coordinate Collection
-```
-
-## ✨ Key Features
-
-* 🔐 User registration and login
-* 🔑 Password reset and email authentication
-* 🍱 Surplus food listing
-* 🙋 Food request system
-* 📍 GPS-based location detection
-* 📏 Nearby donor/seeker matching
-* 🗺️ Location navigation
-* 🔎 Available Food discovery
-* 👥 Available Seekers discovery
-* 💬 WhatsApp-based communication
-* ⏰ Time-based food availability
-* 📱 Responsive interface
-* 🤝 Donor–seeker connection
-* 🌱 Community-focused food redistribution
-
-## 📍 Location-Based Matching
-
-Food Connect uses latitude and longitude to identify nearby donors and seekers.
-
-The current matching system supports a **20 km radius** for nearby connections and calculates the approximate distance between users.
-
-## 💬 WhatsApp Integration
-
-Users can contact donors or seekers directly through WhatsApp using pre-filled messages.
-
-WhatsApp is used for communication and coordination. Messages require user interaction and are not silently sent by the website.
-
-## 🛠️ Technology Stack
-
-### Frontend
-
-* HTML5
-* CSS3
-* JavaScript
-
-### Backend
-
-* Supabase
-
-### Database
-
-* PostgreSQL
-
-### Geographic Matching
-
-* PostGIS
-
-### Authentication
-
-* Supabase Authentication
-
-### Hosting
-
-* Netlify
-
-### Communication
-
-* WhatsApp
-
-## 🏗️ System Architecture
-
-```text
-                    FOOD CONNECT
-                         │
-                  ┌──────┴──────┐
-                  │             │
-              FRONTEND       SUPABASE
-                  │             │
-          HTML/CSS/JS      ┌────┴────┐
-                           │         │
-                        Auth     PostgreSQL
-                                     │
-                                  PostGIS
-                                     │
-                            Location Matching
-                                     │
-                              Donor ↔ Seeker
-                                     │
-                                  WhatsApp
-```
-
-## 🌍 Community Collaboration
-
-Food Connect is designed to support collaboration with:
-
-* NGOs
-* Volunteers
-* Colleges
-* Restaurants
-* Hotels
-* Caterers
-* Event organizers
-* Community organizations
-
-A potential collaboration model is:
-
-**FOOD CONNECT × SWOTT**
-
-**Technology + Community Network = Social Impact**
-
-## 📊 Potential Impact
-
-The platform can be extended to track:
-
-* Food donations
-* Successful food connections
-* People served
-* Food rescued
-* Participating organizations
-* Volunteers involved
-
-## 🚀 Future Scope
-
-* 📱 Android / iOS application
-* 🔔 Push notifications
-* 🗺️ Advanced map interface
-* 📊 Impact dashboard
-* 👥 Volunteer management
-* 🏢 Organization dashboards
-* 📸 Food image uploads
-* 🤖 Smart food matching
-* 🔗 Integration with more NGOs and institutions
-
-## 🔒 Security
-
-The project uses Supabase authentication and database security mechanisms.
-
-**Important:** API secrets, service-role keys, passwords and private credentials should never be committed to this repository.
-
-## 👨‍💻 Developer
-
-**JAYALINGAM A.**
-
-Electronics and Communication Engineering Student
-
-### Food Connect
-
-**Save Food • Share Food • Serve Communities ❤️**
-
----
-
-## 📄 Project Status
-
-🚧 Active Development
-
-Food Connect is being developed as a technology-driven initiative to explore how digital platforms can help connect surplus food with community needs.
+For Netlify, upload the contents of this folder or connect the folder/repository as the Netlify publish directory.
